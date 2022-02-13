@@ -3,7 +3,7 @@ import math
 
 """from tetrio.js"""
 
-kick_data = {
+kicks = {
     "01": [[0, 0], [-1, 0], [-1, -1], [0, 2], [-1, 2]],
     "10": [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],
     "12": [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],
@@ -18,6 +18,40 @@ kick_data = {
     "31": [[0, 0], [-1, 0], [-1, -2], [-1, -1], [0, -2], [0, -1]]
 }
 
+"""converted from tetrio i kick table using TTC implementation offsets"""
+"""read: https://harddrop.com/wiki/SRS#How_Guideline_SRS_Really_Works"""
+
+i_kicks = {
+    "01": [[1, 0], [2, 0], [-1, 0], [-1, 1], [2, -2]],
+    "10": [[-1, 0], [-2, 0], [1, 0], [-2, 2], [1, -1]],
+    "12": [[0, -1], [-1, -1], [2, -1], [-1, -3], [2, 0]],
+    "21": [[0, 1], [-2, 1], [1, 1], [-2, 0], [1, 3]],
+    "23": [[-1, 0], [1, 0], [-2, 0], [1, -1], [-2, 2]],
+    "32": [[1, 0], [2, 0], [-1, 0], [2, -2], [-1, 1]],
+    "30": [[0, 1], [1, 1], [-2, 1], [1, 3], [-2, 0]],
+    "03": [[0, -1], [-1, -1], [2, -1], [2, 0], [-1, -3]],
+    "02": [[1, -1], [1, -2]],
+    "13": [[-1, -1], [0, -1]],
+    "20": [[-1, 1], [-1, 2]],
+    "31": [[1, 1], [0, 1]]
+}
+
+o_kicks = {
+    "01": [0, 1],
+    "02": [1, 1],
+    "03": [1, 0],
+    "10": [0, -1],
+    "12": [1, 0],
+    "13": [1, -1],
+    "20": [-1, -1],
+    "21": [-1, 0],
+    "23": [0, -1],
+    "30": [-1, 0],
+    "31": [-1, 1],
+    "32": [0, 1]
+}
+
+# please let me know if you know how this works, because i certainly don't
 def to_kernal(kicks):
     A = np.zeros((5, 5))
     p = 1
@@ -26,34 +60,17 @@ def to_kernal(kicks):
         p *= 2
     return A
 
-kick_kernals = {i : to_kernal(kick_data[i]) for i in kick_data}
-
-i_kicks = {
-    "01": [[0, 0], [1, 0], [-2, 0], [-2, 1], [1, -2]],
-    "10": [[0, 0], [-1, 0], [2, 0], [-1, 2], [2, -1]],
-    "12": [[0, 0], [-1, 0], [2, 0], [-1, -2], [2, 1]],
-    "21": [[0, 0], [-2, 0], [1, 0], [-2, -1], [1, 2]],
-    "23": [[0, 0], [2, 0], [-1, 0], [2, -1], [-1, 2]],
-    "32": [[0, 0], [1, 0], [-2, 0], [1, -2], [-2, 1]],
-    "30": [[0, 0], [1, 0], [-2, 0], [1, 2], [-2, -1]],
-    "03": [[0, 0], [-1, 0], [2, 0], [2, 1], [-1, -2]],
-    "02": [[0, 0], [0, -1]],
-    "13": [[0, 0], [1, 0]],
-    "20": [[0, 0], [0, 1]],
-    "31": [[0, 0], [-1, 0]]
-}
+kernals = {i: to_kernal(kicks[i]) for i in kicks}
+i_kernals = {i: to_kernal(i_kicks[i]) for i in i_kicks}
+o_kernals = {i: to_kernal(o_kicks[i]) for i in o_kicks}
 
 minos = ["z", "l", "o", "s", "i", "j", "t"]
 
-# i'd like to use the actual ttc implementation of srs kicks but it doesn't work with 180 spins
-# its quite nice, but you can't modify it easily
-# the "pure rotation" of pieces is far easier to work with, but oh well
-
 pieces = {
-    "i": np.array([[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], dtype=np.float32),
+    "i": np.array([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 1, 1, 1, 1], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]], dtype=np.float32),
     "j": np.array([[1, 0, 0], [1, 1, 1], [0, 0, 0]], dtype=np.float32),
     "l": np.array([[0, 0, 1], [1, 1, 1], [0, 0, 0]], dtype=np.float32),
-    "o": np.array([[1, 1], [1, 1]], dtype=np.float32),
+    "o": np.array([[0, 1, 1], [0, 1, 1], [0, 0, 0]], dtype=np.float32),
     "s": np.array([[0, 1, 1], [1, 1, 0], [0, 0, 0]], dtype=np.float32),
     "t": np.array([[0, 1, 0], [1, 1, 1], [0, 0, 0]], dtype=np.float32),
     "z": np.array([[1, 1, 0], [0, 1, 1], [0, 0, 0]], dtype=np.float32)
@@ -83,8 +100,10 @@ def attack(lines, tspin, mini, b2b, combo):
         print(r)
     return int(r)
 
+
 rots = {mino: [np.rot90(pieces[mino], i, axes=(1, 0))
                for i in range(4)] for mino in minos}
+
 
 class RNG():
     def __init__(self, seed):
@@ -114,4 +133,3 @@ class RNG():
 
     def getCurrentSeed(self):
         return self._seed
-

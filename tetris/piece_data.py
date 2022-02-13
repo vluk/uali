@@ -53,10 +53,10 @@ o_kicks = {
 
 # please let me know if you know how this works, because i certainly don't
 def to_kernal(kicks):
-    A = np.zeros((5, 5))
+    A = np.zeros((7, 7))
     p = 1
     for kick in kicks:
-        A[kick[0] + 2][kick[1] + 2] = p
+        A[kick[0] + 3][kick[1] + 3] = p
         p *= 2
     return A
 

@@ -35,12 +35,16 @@ class Tetris():
         moves = np.clip(np.clip(right, 0, 1) + np.clip(left, 0, 1), 0, 1)
         return moves
     
+    # please let me know if you know how this works, because i certainly don't
     def rotate(moves, full):
         empty = 1 - full
         rotates = np.zeros(empty.shape)
+        # loop through rotations
         for i in range(1, 4):
-            mask = np.roll(moves, i, axis=0)
-            rmoves = np.array([correlate2d(mask[i], kick_kernals[str(j) + str((i + j) % 4)], fillvalue=0) for j in range(4)])[:,2:42, 2:12]
+            mask = np.roll(moves, i, axis=0) - empty
+            # loop through states
+            # it's not isomorphic, but it's non-branching which eases computation
+            rmoves = np.array([correlate2d(mask[i], kick_kernals[str(j) + str((i + j) % 4)], fillvalue=0) for j in range(4)])[:,3:43, 3:13]
             print(rmoves.shape)
             rotates += np.clip(rmoves, 0, 1)
         moves = np.clip(rotates + moves, 0, 1)

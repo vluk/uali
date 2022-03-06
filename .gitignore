@@ -1,2 +1,4 @@
 env/
 tetris/tetrio.js
+*/__pycache__/
+*/__pycache__/$

@@ -51,33 +51,9 @@ o_kicks = {
     32: [[0, 1]]
 }
 
-I = np.identity(40, dtype=int)
-U1 = np.identity(41, dtype=int)[1:,:40]
-U2 = U1 @ U1
-U3 = U1 @ U1 @ U1
-U = [U1, U2, U3]
-L1 = np.identity(41, dtype=int)[:40,1:]
-L2 = L1 @ L1
-L3 = L1 @ L1 @ L1
-L = [L1, L2, L3]
-
-def shift(A, x, y):
-    if x > 0:
-        A = A @ U[x - 1]
-    elif x < 0:
-        A = A @ L[-x - 1]
-    if y > 0:
-        A = U[y - 1] @ A
-    elif y < 0:
-        A = L[-y - 1] @ A
-    return A
-
-def kickrow_to_matrix(row):
-    return np.array([shift(I, k[0], k[1]) for k in row])
-
-kickstack = {i: kickrow_to_matrix(kicks[i]) for i in kicks}
-i_kickstack = {i: kickrow_to_matrix(i_kicks[i]) for i in i_kicks}
-o_kickstack = {i: kickrow_to_matrix(o_kicks[i]) for i in o_kicks}
+kicks = {i: [(max(x, 0), max(y, 0), max(-x, 0), max(-y, 0)) for y,x in kicks[i]] for i in kicks}
+o_kicks = {i: [(max(x, 0), max(y, 0), max(-x, 0), max(-y, 0)) for y,x in o_kicks[i]] for i in o_kicks}
+i_kicks = {i: [(max(x, 0), max(y, 0), max(-x, 0), max(-y, 0)) for y,x in i_kicks[i]] for i in i_kicks}
 
 minos = ["z", "l", "o", "s", "i", "j", "t"]
 
@@ -90,6 +66,10 @@ pieces = {
     "t": np.array([[0, 1, 0], [1, 1, 1], [0, 0, 0]], dtype=np.float32),
     "z": np.array([[1, 1, 0], [0, 1, 1], [0, 0, 0]], dtype=np.float32)
 }
+
+rots = {mino: [np.rot90(pieces[mino], i, axes=(1, 0))
+               for i in range(4)] for mino in minos}
+
 
 def attack(lines, tspin, mini, b2b, combo):
     """calculates attack, not counting all-clear bonus"""
@@ -114,10 +94,6 @@ def attack(lines, tspin, mini, b2b, combo):
         r = np.log(combo * 1.26)
         print(r)
     return int(r)
-
-
-rots = {mino: [np.rot90(pieces[mino], i, axes=(1, 0))
-               for i in range(4)] for mino in minos}
 
 
 class RNG():

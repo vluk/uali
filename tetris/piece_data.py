@@ -55,6 +55,11 @@ kicks = {i: [(max(x, 0), max(y, 0), max(-x, 0), max(-y, 0)) for y,x in kicks[i]]
 o_kicks = {i: [(max(x, 0), max(y, 0), max(-x, 0), max(-y, 0)) for y,x in o_kicks[i]] for i in o_kicks}
 i_kicks = {i: [(max(x, 0), max(y, 0), max(-x, 0), max(-y, 0)) for y,x in i_kicks[i]] for i in i_kicks}
 
+TRIL = np.tril(np.ones((40, 40), dtype=int), k=0)
+TRIU = np.triu(np.ones((10, 10), dtype=int), k=0)
+POW = np.power(2, np.arange(40))
+
+
 minos = ["z", "l", "o", "s", "i", "j", "t"]
 
 pieces = {

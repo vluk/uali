@@ -1,3 +1,4 @@
+import torch
 import numpy as np
 import math
 
@@ -51,29 +52,24 @@ o_kicks = {
     32: [[0, 1]]
 }
 
-kicks = {i: [(max(x, 0), max(y, 0), max(-x, 0), max(-y, 0)) for y,x in kicks[i]] for i in kicks}
-o_kicks = {i: [(max(x, 0), max(y, 0), max(-x, 0), max(-y, 0)) for y,x in o_kicks[i]] for i in o_kicks}
-i_kicks = {i: [(max(x, 0), max(y, 0), max(-x, 0), max(-y, 0)) for y,x in i_kicks[i]] for i in i_kicks}
-
-TRIL = np.tril(np.ones((40, 40), dtype=int), k=0)
-TRIU = np.triu(np.ones((10, 10), dtype=int), k=0)
-POW = np.power(2, np.arange(40))
-
-
 minos = ["z", "l", "o", "s", "i", "j", "t"]
 
 pieces = {
-    "i": np.array([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 1, 1, 1, 1], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]], dtype=np.float32),
-    "j": np.array([[1, 0, 0], [1, 1, 1], [0, 0, 0]], dtype=np.float32),
-    "l": np.array([[0, 0, 1], [1, 1, 1], [0, 0, 0]], dtype=np.float32),
-    "o": np.array([[0, 1, 1], [0, 1, 1], [0, 0, 0]], dtype=np.float32),
-    "s": np.array([[0, 1, 1], [1, 1, 0], [0, 0, 0]], dtype=np.float32),
-    "t": np.array([[0, 1, 0], [1, 1, 1], [0, 0, 0]], dtype=np.float32),
-    "z": np.array([[1, 1, 0], [0, 1, 1], [0, 0, 0]], dtype=np.float32)
+    "i": torch.tensor([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 1, 1, 1, 1], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]], dtype=int),
+    "j": torch.tensor([[1, 0, 0], [1, 1, 1], [0, 0, 0]], dtype=int),
+    "l": torch.tensor([[0, 0, 1], [1, 1, 1], [0, 0, 0]], dtype=int),
+    "o": torch.tensor([[0, 1, 1], [0, 1, 1], [0, 0, 0]], dtype=int),
+    "s": torch.tensor([[0, 1, 1], [1, 1, 0], [0, 0, 0]], dtype=int),
+    "t": torch.tensor([[0, 1, 0], [1, 1, 1], [0, 0, 0]], dtype=int),
+    "z": torch.tensor([[1, 1, 0], [0, 1, 1], [0, 0, 0]], dtype=int)
 }
 
-rots = {mino: [np.rot90(pieces[mino], i, axes=(1, 0))
+rots = {mino: [torch.rot90(pieces[mino], i, [1, 0])
                for i in range(4)] for mino in minos}
+
+TRIL = torch.tril(torch.ones(40, 40, dtype=int))
+TRIU = torch.triu(torch.ones(40, 40, dtype=int))
+POW = torch.pow(2, torch.arange(40))
 
 
 def attack(lines, tspin, mini, b2b, combo):

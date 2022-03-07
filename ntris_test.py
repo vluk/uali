@@ -1,5 +1,7 @@
-from ntris import Tetris
-from piece_data import rots
+import time
+
+from tetris.piece_data import rots
+from tetris.ntris import Tetris
 
 def place_piece(board, x, y, piece, rot):
     # cursed index manip to clip piece boundary
@@ -38,6 +40,5 @@ board = place_piece(board, 36, 7, "o", 0)
 
 pretty_print(board)
 
-moves = Tetris.generate_moves(board, "t")[2]
-
-pretty_print(moves)
+for i in range(100):
+    Tetris.generate_moves(board, "t")

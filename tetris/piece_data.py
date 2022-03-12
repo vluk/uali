@@ -13,10 +13,10 @@ kicks = {
     32: [[0, 0], [-1, 0], [-1, 1], [0, -2], [-1, -2]],
     30: [[0, 0], [-1, 0], [-1, 1], [0, -2], [-1, -2]],
     3: [[0, 0], [1, 0], [1, -1], [0, 2], [1, 2]],
-    2: [[0, 0], [0, -1], [1, -1], [-1, -1], [1, 0], [-1, 0]],
-    13: [[0, 0], [1, 0], [1, -2], [1, -1], [0, -2], [0, -1]],
-    20: [[0, 0], [0, 1], [-1, 1], [1, 1], [-1, 0], [1, 0]],
-    31: [[0, 0], [-1, 0], [-1, -2], [-1, -1], [0, -2], [0, -1]]
+    2: [[0, 0]],
+    13: [[0, 0]],
+    20: [[0, 0]],
+    31: [[0, 0]]
 }
 
 """converted from tetrio i kick table using TTC implementation offsets"""
@@ -31,10 +31,10 @@ i_kicks = {
     32: [[1, 0], [2, 0], [-1, 0], [2, -2], [-1, 1]],
     30: [[0, 1], [1, 1], [-2, 1], [1, 3], [-2, 0]],
     3: [[0, -1], [-1, -1], [2, -1], [2, 0], [-1, -3]],
-    2: [[1, -1], [1, -2]],
-    13: [[-1, -1], [0, -1]],
-    20: [[-1, 1], [-1, 2]],
-    31: [[1, 1], [0, 1]]
+    2: [[1, -1]],
+    13: [[-1, -1]],
+    20: [[-1, 1]],
+    31: [[1, 1]]
 }
 
 o_kicks = {
@@ -51,6 +51,10 @@ o_kicks = {
     31: [[-1, 1]],
     32: [[0, 1]]
 }
+
+kicks = {i: [(max(x, 0), max(y, 0), max(-x, 0), max(-y, 0)) for y,x in kicks[i]] for i in kicks}
+o_kicks = {i: [(max(x, 0), max(y, 0), max(-x, 0), max(-y, 0)) for y,x in o_kicks[i]] for i in o_kicks}
+i_kicks = {i: [(max(x, 0), max(y, 0), max(-x, 0), max(-y, 0)) for y,x in i_kicks[i]] for i in i_kicks}
 
 minos = ["z", "l", "o", "s", "i", "j", "t"]
 
@@ -69,7 +73,9 @@ rots = {mino: [torch.rot90(pieces[mino], i, [1, 0])
 
 TRIL = torch.tril(torch.ones(40, 40, dtype=int))
 TRIU = torch.triu(torch.ones(40, 40, dtype=int))
-POW = torch.pow(2, torch.arange(40))
+POW = torch.unsqueeze(torch.pow(2, torch.arange(40)), 1)
+print(POW)
+
 
 
 def attack(lines, tspin, mini, b2b, combo):

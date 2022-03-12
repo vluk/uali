@@ -38,7 +38,5 @@ board = place_piece(board, 34, 3, "l", 3)
 board = place_piece(board, 35, 9, "i", 1)
 board = place_piece(board, 36, 7, "o", 0)
 
-pretty_print(board)
-
 for i in range(100):
     Tetris.generate_moves(board, "t")
